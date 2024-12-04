@@ -1,8 +1,8 @@
 bl_info = {
     "name": "Bone Animation Copy Tool",
-    "description": "Copy animation between different armature by bone constrain",
+    "description": "Copy animation between different armature by bone constraint",
     "author": "Kumopult <kumopult@qq.com>",
-    "version": (1, 1),
+    "version": (1, 1, 1),
     "blender": (2, 83, 0),
     "location": "View 3D > Toolshelf",
     "doc_url": "https://github.com/kumopult/blender_BoneAnimCopy",
