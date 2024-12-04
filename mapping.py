@@ -13,7 +13,7 @@ def draw_panel(layout):
     row = layout.row()
     left = row.column_flow(columns=1, align=True)
     box = left.box().row()
-    # 全选/反选按钮
+    # Select all/inverse selection button
     if s.editing_type == 0:
         box_left = box.row(align=True)
         if s.selected_count == len(s.mappings):
@@ -21,18 +21,18 @@ def draw_panel(layout):
         else:
             box_left.operator('kumopult_bac.select_action', text='', emboss=False, icon='CHECKBOX_DEHLT').action = 'ALL'
             if s.selected_count != 0:
-                # 反选按钮仅在选中部分时出现
+                # The anti-select button only appears when the part is selected.
                 box_left.operator('kumopult_bac.select_action', text='', emboss=False, icon='UV_SYNC_SELECT').action = 'INVERSE'
-    # 编辑模式切换
+    # Edit mode switch
     box_right = box.row(align=False)
     box_right.alignment = 'RIGHT'
-    box_right.operator('kumopult_bac.select_edit_type', text='' if s.editing_type!=0 else '映射', icon='PRESET', emboss=True, depress=s.editing_type==0).selected_type = 0
-    box_right.operator('kumopult_bac.select_edit_type', text='' if s.editing_type!=1 else '旋转', icon='CON_ROTLIKE', emboss=True, depress=s.editing_type==1).selected_type = 1
-    box_right.operator('kumopult_bac.select_edit_type', text='' if s.editing_type!=2 else '位移', icon='CON_LOCLIKE', emboss=True, depress=s.editing_type==2).selected_type = 2
+    box_right.operator('kumopult_bac.select_edit_type', text='' if s.editing_type!=0 else 'Mapping', icon='PRESET', emboss=True, depress=s.editing_type==0).selected_type = 0
+    box_right.operator('kumopult_bac.select_edit_type', text='' if s.editing_type!=1 else 'Rotation', icon='CON_ROTLIKE', emboss=True, depress=s.editing_type==1).selected_type = 1
+    box_right.operator('kumopult_bac.select_edit_type', text='' if s.editing_type!=2 else 'Location', icon='CON_LOCLIKE', emboss=True, depress=s.editing_type==2).selected_type = 2
     box_right.operator('kumopult_bac.select_edit_type', text='' if s.editing_type!=3 else 'ＩＫ', icon='CON_KINEMATIC', emboss=True, depress=s.editing_type==3).selected_type = 3
-    # 映射列表
+    # Mapping list
     left.template_list('BAC_UL_mappings', '', s, 'mappings', s, 'active_mapping', rows=7)
-    # 预设菜单
+    # Presets menu
     box = left.box().row(align=True)
     box.menu(BAC_MT_presets.__name__, text=BAC_MT_presets.bl_label, translate=False, icon='PRESET')
     box.operator(AddPresetBACMapping.bl_idname, text="", icon='ADD')
@@ -42,28 +42,29 @@ def draw_panel(layout):
 
     right = row.column(align=True)
     right.separator()
-    # 设置菜单
+    # Setup Menu
     right.menu(BAC_MT_SettingMenu.__name__, text='', icon='DOWNARROW_HLT')
     right.separator()
-    # 列表操作按钮
-    right.operator('kumopult_bac.list_action', icon='PRESET_NEW', text='').action = 'ADD_SELECT'
-    right.operator('kumopult_bac.list_action', icon='CON_TRACKTO', text='').action = 'ADD_ACTIVE'
-    right.operator('kumopult_bac.list_action', icon='ADD', text='').action = 'ADD'
+    # List Action Buttons
+    if s.owner.mode != 'POSE':
+        right.operator('kumopult_bac.list_action', icon='ADD', text='').action = 'ADD'
+    elif s.target.mode != 'POSE':
+        right.operator('kumopult_bac.list_action', icon='PRESET_NEW', text='').action = 'ADD_SELECT'
+    else:
+        right.operator('kumopult_bac.list_action', icon='PLUS', text='').action = 'ADD_ACTIVE'
     right.operator('kumopult_bac.list_action', icon='REMOVE', text='').action = 'REMOVE'
     right.operator('kumopult_bac.list_action', icon='TRIA_UP', text='').action = 'UP'
     right.operator('kumopult_bac.list_action', icon='TRIA_DOWN', text='').action = 'DOWN'
     right.separator()
     right.operator('kumopult_bac.child_mapping', icon='CON_CHILDOF', text='')
-    right.operator('kumopult_bac.name_mapping', icon='FORWARD', text='')
-    right.operator('kumopult_bac.name_mapping_reverse', icon='BACK', text='')
+    right.operator('kumopult_bac.name_mapping', icon='CON_TRANSFORM_CACHE', text='')
     right.operator('kumopult_bac.mirror_mapping', icon='MOD_MIRROR', text='')
-    right.operator('kumopult_bac.rot_mapping', icon='CON_ROTLIKE', text='')
 
 
 class BAC_UL_mappings(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index, flt_flag):
         s = get_state()
-        layout.alert = not item.is_valid() # 该mapping无效时警告
+        layout.alert = not item.is_valid() # Warning if this mapping is invalid
         layout.active = item.selected or s.selected_count == 0
         row  = layout.row(align=True)
 
@@ -121,15 +122,15 @@ class BAC_MT_SettingMenu(bpy.types.Menu):
 
 
 class BAC_MT_presets(bpy.types.Menu):
-    bl_label = "映射表预设"
+    bl_label = "BAC Mapping Table Presets"
     preset_subdir = "kumopult_bac"
     preset_operator = "script.execute_preset"
     draw = bpy.types.Menu.draw_preset
 
 class AddPresetBACMapping(AddPresetBase, bpy.types.Operator):
     bl_idname = "kumopult_bac.mappings_preset_add"
-    bl_label = "添加预设 Add BAC Mappings Preset"
-    bl_description = "将当前骨骼映射表保存为预设，以供后续直接套用"
+    bl_label = "Add BAC Mappings Preset"
+    bl_description = "Save the current bone mapping table as a preset for direct application in the future."
     preset_menu = "BAC_MT_presets"
 
     # variable used for all preset values
@@ -148,7 +149,7 @@ class AddPresetBACMapping(AddPresetBase, bpy.types.Operator):
 
 class BAC_OT_OpenPresetFolder(bpy.types.Operator):
     bl_idname = 'kumopult_bac.open_preset_folder'
-    bl_label = '打开预设文件夹'
+    bl_label = 'Open preset folder'
 
     def execute(self, context):
         os.system('explorer ' + bpy.utils.resource_path('USER') + '\scripts\presets\kumopult_bac')
@@ -157,7 +158,7 @@ class BAC_OT_OpenPresetFolder(bpy.types.Operator):
 class BAC_OT_SelectEditType(bpy.types.Operator):
     bl_idname = 'kumopult_bac.select_edit_type'
     bl_label = ''
-    bl_description = '选择编辑列表类型'
+    bl_description = 'Select Edit List Type'
     bl_options = {'UNDO'}
 
     selected_type: bpy.props.IntProperty(override={'LIBRARY_OVERRIDABLE'})
@@ -170,8 +171,8 @@ class BAC_OT_SelectEditType(bpy.types.Operator):
 
 class BAC_OT_SelectAction(bpy.types.Operator):
     bl_idname = 'kumopult_bac.select_action'
-    bl_label = '列表选择操作'
-    bl_description = '全选/弃选/反选'
+    bl_label = 'List Selection Operation'
+    bl_description = 'Select All/Abstain/Counterselect'
     bl_options = {'UNDO'}
 
     action: bpy.props.StringProperty(override={'LIBRARY_OVERRIDABLE'})
@@ -207,8 +208,8 @@ class BAC_OT_SelectAction(bpy.types.Operator):
 
 class BAC_OT_ListAction(bpy.types.Operator):
     bl_idname = 'kumopult_bac.list_action'
-    bl_label = '列表基本操作'
-    bl_description = '依次为新建(批量)、新建(映射)、新建、删除、上移、下移\n其中在姿态模式下选中骨骼并点击新建的话，\n可以自动填入对应骨骼'
+    bl_label = 'Basic list operations'
+    bl_description = 'The sequence is New, Delete, Move Up, Move Down\n where if you select a bone in pose mode and click New, \n can be automatically filled with the corresponding bone.'
     bl_options = {'UNDO'}
 
     action: bpy.props.StringProperty(override={'LIBRARY_OVERRIDABLE'})
@@ -217,26 +218,23 @@ class BAC_OT_ListAction(bpy.types.Operator):
         s = get_state()
 
         def add():
-            # 普通add
+            # Regular add
             s.add_mapping('', '')
         
         def add_select():
-            # 选中项add
+            # Selected item add
             bone_names = []
             for bone in s.owner.data.bones:
                 if bone.select:
                     bone_names.append(bone.name)
-            for name in bone_names:
-                s.add_mapping(name, '')
-            bone_names = []
-            for bone in s.target.data.bones:
-                if bone.select:
-                    bone_names.append(bone.name)
-            for name in bone_names:
-                s.add_mapping('', name)
+            if len(bone_names) > 0:
+                for name in bone_names:
+                    s.add_mapping(name, '')
+            else:
+                s.add_mapping('', '')
         
         def add_active():
-            # 激活项add
+            # Active add
             owner = s.owner.data.bones.active
             target = s.target.data.bones.active
             s.add_mapping(owner.name if owner != None else '', target.name if target != None else '')
@@ -257,7 +255,7 @@ class BAC_OT_ListAction(bpy.types.Operator):
                         move_indices.append(i)
                 for i in move_indices:
                     if not s.mappings[i - 1].selected:
-                        # 前一项未选中时才能前移
+                        # Move forward only when the previous item is unchecked.
                         s.mappings.move(i, i - 1)
         
         def down():
@@ -272,7 +270,7 @@ class BAC_OT_ListAction(bpy.types.Operator):
                         move_indices.append(i)
                 for i in move_indices:
                     if not s.mappings[i + 1].selected:
-                        # 后一项未选中时才能后移
+                        # Move back only when the last item is unchecked.
                         s.mappings.move(i, i + 1)
         
         ops = {
@@ -290,8 +288,8 @@ class BAC_OT_ListAction(bpy.types.Operator):
 
 class BAC_OT_ChildMapping(bpy.types.Operator):
     bl_idname = 'kumopult_bac.child_mapping'
-    bl_label = '子级映射'
-    bl_description = '如果选中映射的目标骨骼和自身骨骼都有且仅有唯一的子级，则在那两个子级间建立新的映射'
+    bl_label = 'Child mapping'
+    bl_description = 'If the target bone of the selected mapping and its own bone both only have unique sublevels, a new mapping is created between those two sublevels.'
     bl_options = {'UNDO'}
     
     execute_flag: bpy.props.BoolProperty(default=False, override={'LIBRARY_OVERRIDABLE'})
@@ -318,7 +316,7 @@ class BAC_OT_ChildMapping(bpy.types.Operator):
         if len(target_children) == len(owner_children) == 1:
             s.add_mapping(owner_children[0].name, target_children[0].name, index + 1)[0].selected = True
             self.execute_flag = True
-            # 递归调用，实现连锁对应
+            # Recursive calls for chain correspondence
             # self.child_mapping()
         else:
             for i in range(0, len(owner_children)):
@@ -332,25 +330,25 @@ class BAC_OT_ChildMapping(bpy.types.Operator):
             self.child_mapping(i)
         
         if not self.execute_flag:
-            self.report({"ERROR"}, "所选项中没有可建立子级映射的映射")
+            self.report({"ERROR"}, "There are no mappings in the selected options that can create sub-level mappings.")
             
         return {'FINISHED'}
 
 class BAC_OT_NameMapping(bpy.types.Operator):
     bl_idname = 'kumopult_bac.name_mapping'
-    bl_label = '名称映射(向右)'
-    bl_description = '按照名称的相似程度来给自身骨骼自动寻找最接近的目标骨骼'
+    bl_label = 'Name mapping'
+    bl_description = 'Automatically find the closest target bone for your own skeleton according to the similarity of names.'
     bl_options = {'UNDO'}
 
     @classmethod
     def poll(cls, context):
-        ret = False
+        ret = True
         s = get_state()
         if s == None:
             return False
         for i in s.get_selection():
-            if s.mappings[i].get_owner() != None:
-                return True
+            if s.mappings[i].get_owner() == None:
+                ret = False
         return ret
 
     def get_similar_bone(self, owner_name, target_bones):
@@ -369,58 +367,15 @@ class BAC_OT_NameMapping(bpy.types.Operator):
         s = get_state()
 
         for i in s.get_selection():
-            if s.mappings[i].get_owner() == None:
-                continue
             m = s.mappings[i]
             m.target = self.get_similar_bone(m.owner, s.get_target_armature().bones)
 
         return {'FINISHED'}
 
-class BAC_OT_NameMapping_Reverse(bpy.types.Operator):
-    bl_idname = 'kumopult_bac.name_mapping_reverse'
-    bl_label = '名称映射(向左)'
-    bl_description = '按照名称的相似程度来给目标骨骼自动寻找最接近的自身骨骼'
-    bl_options = {'UNDO'}
-
-    @classmethod
-    def poll(cls, context):
-        ret = False
-        s = get_state()
-        if s == None:
-            return False
-        for i in s.get_selection():
-            if s.mappings[i].get_target() != None:
-                return True
-        return ret
-
-    def get_similar_bone(self, target_name, owner_bones):
-        similar_name = ''
-        similar_ratio = 0
-
-        for owner in owner_bones:
-            r = difflib.SequenceMatcher(None, target_name, owner.name).quick_ratio()
-            if r > similar_ratio:
-                similar_ratio = r
-                similar_name = owner.name
-        
-        return similar_name
-
-    def execute(self, context):
-        s = get_state()
-
-        for i in s.get_selection():
-            if s.mappings[i].get_target() == None:
-                continue
-            m = s.mappings[i]
-            m.selected_owner = self.get_similar_bone(m.target, s.get_owner_armature().bones)
-            m.update_owner(context)
-
-        return {'FINISHED'}
-
 class BAC_OT_MirrorMapping(bpy.types.Operator):
     bl_idname = 'kumopult_bac.mirror_mapping'
-    bl_label = '镜像映射'
-    bl_description = '如果选中映射的目标骨骼和自身骨骼都有与之对称的骨骼，则在那两个对称骨骼间建立新的映射'
+    bl_label = 'Mirror mapping'
+    bl_description = 'If both the target bone of the selected mapping and its own bone have bones that are symmetrical to it, a new mapping is created between the two symmetrical bones.'
     bl_options = {'UNDO'}
 
     execute_flag: bpy.props.BoolProperty(default=False, override={'LIBRARY_OVERRIDABLE'})
@@ -456,93 +411,14 @@ class BAC_OT_MirrorMapping(bpy.types.Operator):
             self.mirror_mapping(i)
         
         if not self.execute_flag:
-            self.report({"ERROR"}, "所选项中没有可镜像的映射")
-
-        return {'FINISHED'}
-
-class BAC_OT_RotMapping(bpy.types.Operator):
-    bl_idname = 'kumopult_bac.rot_mapping'
-    bl_label = '旋转映射'
-    bl_description = '将目标骨骼的旋转差异映射到自身骨骼'
-    bl_options = {'UNDO'}
-
-    execute_flag: bpy.props.BoolProperty(default=False, override={'LIBRARY_OVERRIDABLE'})
-
-    @classmethod
-    def poll(cls, context):
-        ret = False
-        s = get_state()
-        if s == None:
-            return False
-        for i in s.get_selection():
-            if s.mappings[i].is_valid():
-                ret = True
-        return ret
-
-    def rot_mapping(self, index, context):
-        s = get_state()
-        m = s.mappings[index]
-
-        # edit_bone
-        owner_bone = s.get_owner_armature().edit_bones[m.get_owner().name]
-        target_bone = s.get_target_armature().edit_bones[m.get_target().name]
-
-        def calc_rot_in_custom_space(a, b):
-            """计算edit_bone a在b的自定义空间中的旋转"""
-            if not isinstance(a, bpy.types.EditBone) or not isinstance(b, bpy.types.EditBone):
-                raise ValueError("Both a and b must be instances of bpy.types.EditBone")
-
-            rotation_in_custom_space = b.matrix.inverted() @ a.matrix
-            return [rotation_in_custom_space.to_euler().x,
-                    rotation_in_custom_space.to_euler().y,
-                    rotation_in_custom_space.to_euler().z]
-
-        rot_in_custom_space = calc_rot_in_custom_space(owner_bone, target_bone)
-
-        if rot_in_custom_space != [0.0, 0.0, 0.0]:
-            m.has_rotoffs = True
-            # 将目标和拥有者皆设定为世界空间的旋转约束多余的旋转给转回来
-            # 相当于保留两根骨骼在编辑模式下的旋转偏差，仅映射姿态模式下的旋转
-            m.offset[0] = rot_in_custom_space[0]
-            m.offset[1] = rot_in_custom_space[1]
-            m.offset[2] = rot_in_custom_space[2]
-            m.update_rotoffs(context)
-            self.execute_flag = True
-
-    def execute(self, context):
-        s = get_state()
-        self.execute_flag = False
-        
-        # 纪录当前状态，改成编辑模式
-        # 两个骨架都要选才能进编辑模式
-        select_state = s.owner.select, s.target.select
-        active_obj = bpy.context.view_layer.objects.active
-        current_mode = bpy.context.object.mode
-        s.owner.select = s.target.select = True
-        bpy.context.view_layer.objects.active = s.owner
-        bpy.ops.object.mode_set(mode='EDIT')
-        
-        for i in s.get_selection():
-            if s.mappings[i].get_owner() == None:
-                continue
-            if s.mappings[i].get_target() == None:
-                continue
-            self.rot_mapping(i, context)
-        
-        # 恢复当前状态，恢复当前模式
-        bpy.ops.object.mode_set(mode=current_mode)
-        bpy.context.view_layer.objects.active = active_obj
-        s.owner.select, s.target.select = select_state
-        
-        if not self.execute_flag:
-            self.report({"ERROR"}, "所选项中没有可建立旋转映射的映射")
+            self.report({"ERROR"}, "There are no mirrorable mappings in the selected options.")
 
         return {'FINISHED'}
 
 class BAC_OT_Bake(bpy.types.Operator):
     bl_idname = 'kumopult_bac.bake'
-    bl_label = '烘培动画'
-    bl_description = '根据来源骨架上动作的帧范围将约束效果烘培为新的动作片段\n本质上是在调用姿态=>动画=>烘焙动作这一方法,并自动设置一些参数\n注意这会让本插件所生成约束以外的约束也被烘焙'
+    bl_label = 'Baking Animation'
+    bl_description = 'Bake the constraint effect into a new action clip based on the frame range of the action on the source skeleton\n Essentially, it's calling the gesture=>animation=>bake action method, and automatically setting some parameters\n Note that this will allow constraints other than those generated by the plugin to be baked as well.'
     bl_options = {'UNDO'}
 
     def execute(self, context):
@@ -555,18 +431,16 @@ class BAC_OT_Bake(bpy.types.Operator):
         a = s.target.animation_data
 
         if not a:
-            # 先确保源骨架上有动作
-            alert_error('源骨架上没有动作！', '确保有动作的情况下才能自动判断烘培的帧范围')
+            # Make sure there's action on the source skeleton first.
+            alert_error('No action on the source skeleton!', 'Ensure that there is movement in order to automatically determine the frame range for baking.')
             return {'FINISHED'}
         else:
-            # 选中约束的骨骼
+            # Select the constrained bones.
             bpy.ops.object.mode_set(mode='POSE')
             bpy.ops.pose.select_all(action='DESELECT')
             for m in s.mappings:
-                if m.owner == '':
-                    continue
                 s.get_owner_armature().bones.get(m.owner).select = True
-            # 打开约束进行烘培再关掉
+            # Turn on the restraints for baking and then turn them off.
             s.preview = True
             bpy.ops.nla.bake(
                 frame_start=int(a.action.frame_range[0]),
@@ -576,7 +450,7 @@ class BAC_OT_Bake(bpy.types.Operator):
                 bake_types={'POSE'}
             )
             s.preview = False
-            #重命名动作、添加伪用户
+            #Rename actions, add pseudo-users.
             s.owner.animation_data.action.name = s.target.name
             s.owner.animation_data.action.use_fake_user = True
             return {'FINISHED'}
@@ -594,8 +468,7 @@ classes = (
     BAC_OT_ListAction,
     BAC_OT_ChildMapping,
     BAC_OT_NameMapping,
-    BAC_OT_NameMapping_Reverse,
     BAC_OT_MirrorMapping,
-    BAC_OT_RotMapping,
     BAC_OT_Bake,
     )
+    
