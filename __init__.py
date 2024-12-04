@@ -14,15 +14,15 @@
 bl_info = {
     "name" : "Bone Animation Copy Tool",
     "author" : "Kumopult <kumopult@qq.com>",
-    "description" : "Copy animation between different armature by bone constrain",
+    "description" : "Copy animation between different armature by bone constraint",
     "blender" : (3, 3, 0),
-    "version" : (1, 0, 0),
+    "version" : (1, 0, 1),
     "location" : "View 3D > Toolshelf",
-    "warning" : "因为作者很懒所以没写英文教学！",
+    "warning" : "Because the author is lazy, I haven't written English teaching",
     "category" : "Animation",
     "doc_url": "https://github.com/kumopult/blender_BoneAnimCopy",
     "tracker_url": "https://space.bilibili.com/1628026",
-    # VScode调试：Ctrl + Shift + P
+    # VScode debug：Ctrl + Shift + P
 }
 
 import bpy
@@ -42,22 +42,22 @@ class BAC_PT_Panel(bpy.types.Panel):
         split = layout.row().split(factor=0.2)
         left = split.column()
         right = split.column()
-        left.label(text='映射骨架:')
-        left.label(text='约束目标:')
+        left.label(text='Map skeleton:')
+        left.label(text='Constrained target:')
         right.prop(bpy.context.scene, 'kumopult_bac_owner', text='', icon='ARMATURE_DATA', translate=False)
         if bpy.context.scene.kumopult_bac_owner != None and bpy.context.scene.kumopult_bac_owner.type == 'ARMATURE':
             s = get_state()
             right.prop(s, 'selected_target', text='', icon='ARMATURE_DATA', translate=False)
             
             if s.target == None:
-                layout.label(text='选择另一骨架对象作为约束目标以继续操作', icon='INFO')
+                layout.label(text='Select another skeleton object as a constraint target to continue operation', icon='INFO')
             else:
                 mapping.draw_panel(layout.row())
                 row = layout.row()
-                row.prop(s, 'preview', text='预览约束', icon= 'HIDE_OFF' if s.preview else 'HIDE_ON')
-                row.operator('kumopult_bac.bake', text='烘培动画', icon='NLA')
+                row.prop(s, 'preview', text='Preview constraint', icon= 'HIDE_OFF' if s.preview else 'HIDE_ON')
+                row.operator('kumopult_bac.bake', text='Baking animation', icon='NLA')
         else:
-            right.label(text='未选中映射骨架对象', icon='ERROR')
+            right.label(text='Unexpected mapping skeleton object', icon='ERROR')
 
 
 class BAC_State(bpy.types.PropertyGroup):
@@ -106,17 +106,17 @@ class BAC_State(bpy.types.PropertyGroup):
     active_mapping: bpy.props.IntProperty(default=-1, override={'LIBRARY_OVERRIDABLE'}, update=update_active)
     selected_count:bpy.props.IntProperty(default=0, override={'LIBRARY_OVERRIDABLE'}, update=update_select)
     
-    editing_type: bpy.props.IntProperty(description="用于记录面板类型", override={'LIBRARY_OVERRIDABLE'})
+    editing_type: bpy.props.IntProperty(description="Used to record panel types", override={'LIBRARY_OVERRIDABLE'})
     preview: bpy.props.BoolProperty(
         default=True, 
-        description="开关所有约束以便预览烘培出的动画之类的",
+        description="Switch all constraints to preview the animation of baking",
         override={'LIBRARY_OVERRIDABLE'},
         update=update_preview
     )
 
-    sync_select: bpy.props.BoolProperty(default=False, name='同步选择', description="点击列表项时会自动激活相应骨骼\n勾选列表项时会自动选中相应骨骼", override={'LIBRARY_OVERRIDABLE'})
-    calc_offset: bpy.props.BoolProperty(default=True, name='自动旋转偏移', description="设定映射目标时自动计算旋转偏移", override={'LIBRARY_OVERRIDABLE'})
-    ortho_offset: bpy.props.BoolProperty(default=True, name='正交', description="将计算结果近似至90°的倍数", override={'LIBRARY_OVERRIDABLE'})
+    sync_select: bpy.props.BoolProperty(default=False, name=Synchronous selection', description="Click on the list item to automatically activate the corresponding bone when checking the list item", override={'LIBRARY_OVERRIDABLE'})
+    calc_offset: bpy.props.BoolProperty(default=True, name='Automatic rotation bias', description="Set the mapping target and automatically calculate the rotation bias", override={'LIBRARY_OVERRIDABLE'})
+    ortho_offset: bpy.props.BoolProperty(default=True, name='Orthogonal', description="Multiple of the calculation result is approximately 90°", override={'LIBRARY_OVERRIDABLE'})
     
     def get_target_armature(self):
         return self.target.data
@@ -159,18 +159,18 @@ class BAC_State(bpy.types.PropertyGroup):
         return indices
     
     def add_mapping(self, owner, target, index=-1):
-        # 未传入index时，以激活项作为index
+        # When it is not introduced in index, take the activation item as the index
         if index == -1:
             index = self.active_mapping + 1
-        # 这里需要检测一下目标骨骼是否已存在映射
+        # Here you need to detect whether the target bones have already been mapping
         m, i = self.get_mapping_by_owner(owner)
         if m:
-            # 若已存在，则覆盖原本的源骨骼，并返回映射和索引值
+            # If already exist, cover the original skeleton and return mapping and index values
             m.target = target
             self.active_mapping = i
             return m, i
         else:
-            # 若不存在，则新建映射，同样返回映射和索引值
+            # If it does not exist, create a new mapping, and the same return mapping and index value
             m = self.mappings.add()
             m.selected_owner = owner
             m.target = target
@@ -183,7 +183,7 @@ class BAC_State(bpy.types.PropertyGroup):
         for i in self.get_selection():
             self.mappings[i].clear()
             self.mappings.remove(i)
-        # 选中状态更新
+        # Select status update
         self.active_mapping = min(self.active_mapping, len(self.mappings) - 1)
         self.selected_count = 0
 
