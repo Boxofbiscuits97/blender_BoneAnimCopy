@@ -1,100 +1,100 @@
 # BoneAnimCopy Tool
-## 这是什么？
-这是一个用于在blender中重定向骨骼动画的插件
+## What is this？
+This is a plugin for retargeting skeletal animation in blender.
 
-制作灵感来源于b站up主 
-[露伴知了](https://space.bilibili.com/260963472) 
-制作的
-[解锁FBX动作融合](https://www.bilibili.com/video/BV1GE411i7j3
-) 
-系列教程，通过骨骼约束来映射动作的思路非常简单泛用。
+The inspiration for this comes from the tutorial series 
+[Unlocking FBX Action Fusion](https://space.bilibili.com/260963472) 
+produced by the B station uploader
+[Luban Zhiliao](https://www.bilibili.com/video/BV1GE411i7j3) 
+The idea of mapping actions through bone constraints is very simple and versatile.
 
-我在此基础上进一步研究了骨骼轴向差异等问题的解决方法，并整合成了这个插件来将相关的设置操作简化。希望这一思路能被进一步开发，让更多苦于动作制作的繁琐的独立动画/游戏制作者得到便利。
+Based on this, I have further researched the solution to the problem of bone axial difference, and integrated it into this addon to simplify the related setup operation. I hope this idea can be further developed, so that more independent animators/game makers who suffer from the tediousness of motion creation can be facilitated.
 
-## 使用说明
-### 基本功能
-#### 旋转映射
-安装并注册插件后，可以在3D视图的右侧看到插件面板。在未选中骨架对象时并不会提供任何功能。
+## Description
+### Basic Functions
+#### Rotation Mapping
+After installing and registering the addon, you can see the panel on the right side of the 3D view. It does not provide any functionality when the skeleton object is not selected.
 
 ![](README.assets/未选中骨架.png)
 
-导入一个人物模型以及一个想要映射动作到人物身上的带动作的骨架。我这里使用的是UE4骨架的跑步动作。
+Import a character model, and a skeleton with actions, that you want to map to the character. I'm using the UE4 skeleton for the running action.
 
-点选角色的骨架，右侧面板就会开始显示相关功能。**映射骨架**必然是选中的骨架自身，**约束目标**则可以在场景中选取任意其它骨架。
+Tap on the character's skeleton and the right panel will start displaying the features. The **mapped skeleton** must be the selected skeleton itself, and the **constraint target** can be any other skeleton in the scene.
 
 ![](README.assets/QQ截图20201020013251.png)
 
-将刚才导入的跑步动作骨骼设为**约束目标**之后，完整的插件面板就会展开。下方的**骨骼映射表**是本插件的核心，用于编辑目标和源之间的骨骼对应关系，从而实现骨骼变换的映射。
+After setting the running action skeleton you just imported as a **constraint target**, the full addon panel expands. The **Bone Mapping Table** at the bottom is the heart of the plugin, used to edit the bone correspondence between the target and the source in order to map the bone transformations.
 
-右侧纵向排列的前四个按钮就是一个blender列表界面的基础增、删、上下移动功能，这里先点击【+】新建一个mapping，将两个模型的根骨骼，也就是第一根脊椎骨建立对应关系，就可以看到目标骨骼跟源骨骼一样指向了斜上方。
+The first four buttons arranged vertically on the right side are the basic add, delete, move up and down functions of a Blender list interface. First click [+] to create a new mapping. The root bones of the two models are the first vertebrae to establish the correspondence. You can see the target bone with the same source bone pointing upward diagonally.
 
 ![](README.assets/BAC_README_01.gif)
 
-除了凭空添加空白mapping，也可以先在姿态模式下选中一个或多个骨骼，再点击【+】就会批量生成并自动填入目标
+In addition to adding a blank mapping, you can also select one or more bones in pose mode, and then click [+] to batch generate and auto-fill the targets.
 
 ![](README.assets/BAC_README_02.gif)
 
-#### 旋转修正
-现在我们发现，人物映射动作后的朝向和跑步姿势并不吻合，这是由于人物的骨架和UE4骨架的轴向不同。因此需要额外进行旋转修正
+#### Rotation Correction
+Now we find that the character's orientation and running pose do not match after mapping the action. This is due to the different axes of the character's skeleton and the UE4 skeleton.
 
-![](README.assets/QQ截图20201020111402.png "同样是Y轴朝上，blender骨骼的z轴朝前，UE4骨骼的z轴朝左")
+![](README.assets/QQ截图20201020111402.png “Again, the y-axis is facing up, the z-axis of the blender skeleton is facing forward, and the z-axis of the UE4 skeleton is facing left.”)
 
-在骨骼映射表上方还有四个横向排列的按钮，之前编辑映射关系时默认选择的是第一个。现在我们点击第二个按钮进入旋转修正的编辑模式，就可以通过映射表每一行左侧的按钮来激活对应骨骼的旋转修正，并设置偏移的角度。
-blender的骨骼都是以y轴作为延伸方向，大多数情况下只需要修正y旋转。
+There are also four horizontally aligned buttons above the bone mapping table, the first of which was selected by default when editing the mapping relationship earlier. Now we click on the second button to enter the rotational modification editing mode. We can activate the rotational modification of the corresponding bone by the buttons on the left side of each row of the mapping table, and set the angle of the offset.
+Blender's bones all extend on the y-axis, so in most cases you only need to correct the y-rotation.
 
 ![](README.assets/BAC_README_03.gif)
 
-映射好所有需要的骨骼后就可以让角色大致地模仿出另一骨架的动作了
+Once you have mapped all the bones you need, you can have the character roughly mimic the movement of the other skeleton!
 
 ![](README.assets/BAC_README_05.gif)
 
-#### 位置映射
-之前的步骤只复制了旋转信息，因此跑步也只能在原地跑，要想把位移也一起复制的话，就需要点击第三个按钮，进入位置映射的编辑模式。同样是点击左侧的按钮从而在特定骨骼上激活。
+#### Position Mapping
+The previous steps only copied the rotation information, so the running can only be done in the same place. To copy the displacement as well, you need to click on the third button to enter the editing mode of the position mapping. Again click on the button on the left to activate it on a specific bone.
 
 ![](README.assets/BAC_README_06.gif)
 
-#### IK修正
-仅依靠旋转来映射动作的话，手和脚的最终位置会受到关节长度的影响，在上一张图中可以看到角色的脚并没有准确地踩在地上。想修正这点的话可以点击第四个按钮进入IK修正的编辑。激活脚掌和手掌骨骼的IK修正，就可以更准确地模仿来源骨架的动作。
+#### IK Fix
+If you rely on rotation alone to map movements, the final position of the hands and feet will be affected by the length of the joints, as you can see in the previous image the character's feet are not exactly on the ground. If you want to fix this, you can click the fourth button to go to IK.
 
 ![](README.assets/BAC_README_07.gif)
 
-不过要注意的是，骨架的身高差异有可能会对手的IK修正效果产生影响，并不是应用了IK效果就一定更好，具体还是要在实践中体会。
+However, it should be noted that the height difference of the skeleton may have an impact on the effect of the IK correction on the hand, and it is not always better with the application of IK, which will take some practice.
 
-#### 保存预设
-辛辛苦苦设定好对应关系调好角度后，就可以保存预设，之后在映射相同种类的两种骨骼时就能一键解决。操作方法也很明显，就不多说了。
+#### Save Preset
+After you have set up the correspondence and adjusted the angle, you can save the preset, and then when you map two skeletons of the same type, you can solve the problem with one click. The operation is obvious, so I won't go into details.
 
-除了在界面中增删选用预设，也可以点击右侧文件夹按钮打开预设文件夹，把预设文件另存或打包分享
+Besides adding, deleting, and selecting presets in the interface, you can also click on the folder button on the right side to open a preset folder, and then save the preset file or pack it up for sharing.
 
-### 额外功能
-插件的基本工作方式就是以上四种，实操一遍之后你会发现其实大部分的工作量还是在设定骨骼的对应关系上。因此除了一对对建立关系，插件也正在寻找一些提高映射效率的操作。
+### Extras
+The basic working methods of the plugin are the above four, and after practicing it once, you will find that most of the workload is still on setting up the correspondence of bones. So in addition to the pairwise relationship, the plugin is also looking for some operations to improve the efficiency of the mapping.
 
-#### 子级映射
-很多时候当一对骨骼建立映射之后，它们各自的子级也是需要映射的。根据这个规律我做了一个通过父级来快速联系子级的功能。
+#### Sub-level Mapping
+In many cases, when a pair of bones is mapped, their respective children need to be mapped as well. Based on this pattern I've made a function to quickly relate child levels by parent level.
 
-在列表中选中一条有效的mapping后，点击【子级映射】就会自动对子级进行判断。如果源和目标骨骼各自都只有一个子级，就会直接生成一条子级间的mapping。对于一连串的脊椎，它可以便捷地建立一整条映射。
+After selecting a valid mapping in the list, click [Child Mapping] and it will automatically determine the child level. If the source and target bones each have only one child level, it will directly generate a mapping between the child levels. For a series of spines, it can conveniently create a whole mapping.
 
-如果源和目标的子级并非只有一个，则会为目标骨骼的所有子级各生成一条源骨骼为空的mapping，剩下的就仍然需要手动填入。
+If the source and target bones do not have only one sub-level, then a mapping will be generated for all the sub-levels of the target bone, and the rest will still need to be filled in manually.
 
 ![](README.assets/.gif)
 
-#### 名称映射
-如果需要建立映射的两根骨骼命名相似甚至完全一致的话，那直接对比名称就可以自动挑选对应骨骼了？
+#### Name Mapping
+If the two bones that need to be mapped are named similarly, or even exactly the same, can you compare the names directly to pick the corresponding bone?
 
-目前插件在查找相似名称时使用的是difflib库对字符串直接分析相似度，在部分情况下是可以直接找到想映射的骨骼的。但毕竟骨骼命名千奇百怪，所以映射结果也只能当做参考
+Currently, the addon uses the difflib library to analyze the similarity of the strings, and in some cases it can find the bone you want to map. However, there are many different names for bones, so the mapping results can only be used as a reference.
 
-#### 镜像映射
-如果选中骨骼的自身和目标骨骼都存在镜像骨骼，就可以直接通过镜像来建立新的映射了。blender自己有一套通过名称判断镜像骨骼的方法，插件也是直接调用了那个接口，只要命名规则不要太怪（别跟我说你是用汉字的左右来给镜像骨骼命名...）基本都能正确找到镜像骨骼对来建立映射
+#### Mirror Mapping
+If there is a mirror bone for both the selected bone and the target bone, you can create a new mapping by mirroring it. Blender has its own way to determine the mirror bone by its name, and the addon calls that interface. As long as the naming convention is not too weird (don't tell me you're naming mirror bones with Chinese characters for left and right...), you can basically find the mirror bone pairs correctly to create mapping.
 
-#### 动画烘培
-插件在blender自带的动画烘培上加了一层封装，设置好了各个属性，可以一键按照合适的帧范围烘培出动画并设置好伪用户
+#### Animation Baking
+The addonn adds a layer of encapsulation on top of the animation baking that comes with Blender, and sets the properties so that you can bake an animation according to the appropriate frame range and set up pseudo-users with one click.
 
-## 实现原理
-重定向的实现方法其实就是给骨骼加约束。如果在插件中把一根被映射骨骼的旋转矫正、位置复制、IK三个选项全部打开，可以看到这根骨骼被添加了四个约束,它们的名称均以插件名称缩写BAC命名
+## How it works
+Retargeting is implemented by adding constraints to the bones. If you turn on the Rotation Correction, Position Copy, and IK options for a mapped bone in the addon, you can see that four constraints have been added to the bone, all of which are named after the addon's acronym BAC!
 
 ![](README.assets/约束列表.png)
 
-ROT_COPY是一个复制旋转约束，它用于进行最基础的旋转映射，让自身骨骼的旋转状态直接在世界空间与目标骨骼变得一致
+**ROT_COPY** is a copy-rotation constraint, which is used for the most basic rotation mapping, so that the rotation state of the own bone becomes consistent with the target bone in world space.
 
-ROT_ROLL是一个变换约束。变换约束原本可以用于实现【物体变换驱动物体变换】的复杂效果，但我们这里仅仅调整它【映射至】一栏中的最小旋转值数值，将它当作一个产生恒定旋转效果的简单约束使用。在复制旋转后施加这一约束，就能产生目标骨骼与自身骨骼间恒定的角度偏移，从而满足两者初始朝向不同时的映射需求
+**ROT_ROLL** is a transformation constraint. Transformation constraints can be used to achieve complex effects such as [Object Transformation Driving Object Transformation], but here we just adjust the value of the minimum rotation value in its [Mapped To] column, and use it as a simple constraint that produces a constant rotation effect. Applying this constraint after copying the rotation produces a constant angular offset between the target bone and its own bone, which satisfies the need for mapping when the two are initially facing different directions.
 
-LOC_COPY是一个复制位置约束，IK则是一个简单的两节IK约束。这两者效果就比较直白了。当你对于这些约束的效果都比较了解时，就可以跳出插件功能的局限，自行修改约束效果
+**LOC_COPY** is a copy position constraint and
+**IK** is a simple two-section IK constraint. The effects of these two are a bit more straightforward. Once you understand the effects of these constraints, you can go beyond the limitations of the plugin's functionality and modify the constraints on your own!
