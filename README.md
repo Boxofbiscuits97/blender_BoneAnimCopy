@@ -36,7 +36,8 @@ In addition to adding a blank mapping, you can also select one or more bones in 
 #### Rotation Correction
 Now we find that the character's orientation and running pose do not match after mapping the action. This is due to the different axes of the character's skeleton and the UE4 skeleton.
 
-![](README.assets/QQ截图20201020111402.png) ![](“Again, the y-axis is facing up, the z-axis of the blender skeleton is facing forward, and the z-axis of the UE4 skeleton is facing left.”)
+![](README.assets/QQ截图20201020111402.png) 
+Again, the y-axis is facing up, the z-axis of the blender skeleton is facing forward, and the z-axis of the UE4 skeleton is facing left.
 
 There are also four horizontally aligned buttons above the bone mapping table, the first of which was selected by default when editing the mapping relationship earlier. Now we click on the second button to enter the rotational modification editing mode. We can activate the rotational modification of the corresponding bone by the buttons on the left side of each row of the mapping table, and set the angle of the offset.
 Blender's bones all extend on the y-axis, so in most cases you only need to correct the y-rotation.
