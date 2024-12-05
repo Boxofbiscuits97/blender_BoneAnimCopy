@@ -114,7 +114,7 @@ class BAC_State(bpy.types.PropertyGroup):
         update=update_preview
     )
 
-    sync_select: bpy.props.BoolProperty(default=False, name=Synchronous selection', description="Click on the list item to automatically activate the corresponding bone when checking the list item", override={'LIBRARY_OVERRIDABLE'})
+    sync_select: bpy.props.BoolProperty(default=False, name='Synchronous selection', description="Click on the list item to automatically activate the corresponding bone when checking the list item", override={'LIBRARY_OVERRIDABLE'})
     calc_offset: bpy.props.BoolProperty(default=True, name='Automatic rotation bias', description="Set the mapping target and automatically calculate the rotation bias", override={'LIBRARY_OVERRIDABLE'})
     ortho_offset: bpy.props.BoolProperty(default=True, name='Orthogonal', description="Multiple of the calculation result is approximately 90°", override={'LIBRARY_OVERRIDABLE'})
     
