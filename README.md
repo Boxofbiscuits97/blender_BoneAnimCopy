@@ -5,7 +5,7 @@ This is a plugin for retargeting skeletal animation in blender.
 The inspiration for this comes from the tutorial series 
 [Unlocking FBX Action Fusion](https://space.bilibili.com/260963472) 
 produced by the B station uploader
-[Luban Zhiliao](https://www.bilibili.com/video/BV1GE411i7j3) 
+[Luban Zhiliao](https://www.bilibili.com/video/BV1GE411i7j3).
 The idea of mapping actions through bone constraints is very simple and versatile.
 
 Based on this, I have further researched the solution to the problem of bone axial difference, and integrated it into this addon to simplify the related setup operation. I hope this idea can be further developed, so that more independent animators/game makers who suffer from the tediousness of motion creation can be facilitated.
@@ -36,7 +36,7 @@ In addition to adding a blank mapping, you can also select one or more bones in 
 #### Rotation Correction
 Now we find that the character's orientation and running pose do not match after mapping the action. This is due to the different axes of the character's skeleton and the UE4 skeleton.
 
-![](README.assets/QQ截图20201020111402.png “Again, the y-axis is facing up, the z-axis of the blender skeleton is facing forward, and the z-axis of the UE4 skeleton is facing left.”)
+![](README.assets/QQ截图20201020111402.png) ![](“Again, the y-axis is facing up, the z-axis of the blender skeleton is facing forward, and the z-axis of the UE4 skeleton is facing left.”)
 
 There are also four horizontally aligned buttons above the bone mapping table, the first of which was selected by default when editing the mapping relationship earlier. Now we click on the second button to enter the rotational modification editing mode. We can activate the rotational modification of the corresponding bone by the buttons on the left side of each row of the mapping table, and set the angle of the offset.
 Blender's bones all extend on the y-axis, so in most cases you only need to correct the y-rotation.
@@ -74,7 +74,7 @@ After selecting a valid mapping in the list, click [Child Mapping] and it will a
 
 If the source and target bones do not have only one sub-level, then a mapping will be generated for all the sub-levels of the target bone, and the rest will still need to be filled in manually.
 
-![](README.assets/.gif)
+![](README.assets/BAC_README_04.gif)
 
 #### Name Mapping
 If the two bones that need to be mapped are named similarly, or even exactly the same, can you compare the names directly to pick the corresponding bone?
@@ -96,5 +96,5 @@ Retargeting is implemented by adding constraints to the bones. If you turn on th
 
 **ROT_ROLL** is a transformation constraint. Transformation constraints can be used to achieve complex effects such as [Object Transformation Driving Object Transformation], but here we just adjust the value of the minimum rotation value in its [Mapped To] column, and use it as a simple constraint that produces a constant rotation effect. Applying this constraint after copying the rotation produces a constant angular offset between the target bone and its own bone, which satisfies the need for mapping when the two are initially facing different directions.
 
-**LOC_COPY** is a copy position constraint and
+**LOC_COPY** is a copy position constraint and\n
 **IK** is a simple two-section IK constraint. The effects of these two are a bit more straightforward. Once you understand the effects of these constraints, you can go beyond the limitations of the plugin's functionality and modify the constraints on your own!
