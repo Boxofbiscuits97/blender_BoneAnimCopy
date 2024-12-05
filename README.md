@@ -36,8 +36,8 @@ In addition to adding a blank mapping, you can also select one or more bones in 
 #### Rotation Correction
 Now we find that the character's orientation and running pose do not match after mapping the action. This is due to the different axes of the character's skeleton and the UE4 skeleton.
 
-![](README.assets/QQ截图20201020111402.png) 
 Again, the y-axis is facing up, the z-axis of the blender skeleton is facing forward, and the z-axis of the UE4 skeleton is facing left.
+![](README.assets/QQ截图20201020111402.png)
 
 There are also four horizontally aligned buttons above the bone mapping table, the first of which was selected by default when editing the mapping relationship earlier. Now we click on the second button to enter the rotational modification editing mode. We can activate the rotational modification of the corresponding bone by the buttons on the left side of each row of the mapping table, and set the angle of the offset.
 Blender's bones all extend on the y-axis, so in most cases you only need to correct the y-rotation.
@@ -97,5 +97,5 @@ Retargeting is implemented by adding constraints to the bones. If you turn on th
 
 **ROT_ROLL** is a transformation constraint. Transformation constraints can be used to achieve complex effects such as [Object Transformation Driving Object Transformation], but here we just adjust the value of the minimum rotation value in its [Mapped To] column, and use it as a simple constraint that produces a constant rotation effect. Applying this constraint after copying the rotation produces a constant angular offset between the target bone and its own bone, which satisfies the need for mapping when the two are initially facing different directions.
 
-**LOC_COPY** is a copy position constraint and\n
+**LOC_COPY** is a copy position constraint.
 **IK** is a simple two-section IK constraint. The effects of these two are a bit more straightforward. Once you understand the effects of these constraints, you can go beyond the limitations of the plugin's functionality and modify the constraints on your own!
