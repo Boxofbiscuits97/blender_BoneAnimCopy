@@ -13,15 +13,13 @@
 
 bl_info = {
     "name" : "Bone Animation Copy Tool",
-    "author" : "Kumopult <kumopult@qq.com>",
+    "author" : "Kumopult <kumopult@qq.com>, CCrashCup, & Boxofbiscuits97",
     "description" : "Copy animation between different armature by bone constraint",
     "blender" : (3, 3, 0),
     "version" : (1, 0, 1),
     "location" : "View 3D > Toolshelf",
-    "warning" : "Because the author is lazy, I haven't written English teaching",
     "category" : "Animation",
-    "doc_url": "https://github.com/kumopult/blender_BoneAnimCopy",
-    "tracker_url": "https://space.bilibili.com/1628026",
+    "doc_url": "https://github.com/Boxofbiscuits97/blender_BoneAnimCopy",
     # VScode debug：Ctrl + Shift + P
 }
 
